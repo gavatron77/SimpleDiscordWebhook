@@ -1,9 +1,12 @@
 package com.gavatron;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 public class Embed {
 	private String title;
 	private String desc;
-	private String author;
+	private JsonObject author;
 	private int color;
 	private boolean descPresent = false;
 	private boolean colorPresent = false;
@@ -13,32 +16,35 @@ public class Embed {
 		title = t;
 	}
 
-	public void setDesc(String d) {
+	public Embed setDesc(String d) {
 		desc = d;
 		descPresent = true;
+		return this;
 	}
 
-	public void setColor(String c) {
+	public Embed setColor(String c) {
 		color = Integer.parseInt(c);
 		colorPresent = true;
+		return this;
 	}
 
-	public void setAuthor(Author a) {
-		author = a.getData();
+	public Embed setAuthor(Author a) {
+		author = JsonParser.parseString(a.getData()).getAsJsonObject();
 		authorPresent = true;
+		return this;
 	}
 
 	public String getData() {
-		String embed = "{\"title\":\"" + title + "\"";
+		JsonObject embed = new JsonObject();
+		embed.addProperty("title",title);
 
 		if (descPresent)
-			embed += ",\"description\":\"" + desc + "\"";
+			embed.addProperty("description", desc);
 		if (colorPresent)
-			embed += ",\"color\":" + color + "";
+			embed.addProperty("color", color);
 		if (authorPresent)
-			embed += author;
+			embed.add("author", author);
 
-		embed += "}";
-		return embed;
+		return embed.toString();
 	}
 }

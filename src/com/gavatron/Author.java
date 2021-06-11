@@ -2,6 +2,8 @@ package com.gavatron;
 
 import java.net.URL;
 
+import com.google.gson.JsonObject;
+
 public class Author {
 	private String name;
 	private URL link;
@@ -13,34 +15,35 @@ public class Author {
 		name = n;
 	}
 
-	public void setLink(String l) {
+	public Author setLink(String l) {
 		try {
 			link = new URL(l);
 			linkPresent = true;
 		} catch (Exception e) {
-			System.out.println("Your author link is invalid for some reason.");
+			System.err.println("Your author link is invalid for some reason.");
 		}
+		return this;
 	}
 
-	public void setIcon(String i) {
+	public Author setIcon(String i) {
 		try {
 			icon = new URL(i);
 			iconPresent = true;
 		} catch (Exception e) {
-			System.out.println("Your author icon link is invalid for some reason.");
+			System.err.println("Your author icon link is invalid for some reason.");
 		}
+		return this;
 	}
 
 	public String getData() {
-		String author = ",\"author\":{";
-		author += "\"name\":\"" + name + "\"";
+		JsonObject author = new JsonObject();
+		author.addProperty("name", name);
 		
 		if (linkPresent)
-			author += ",\"url\":\"" + link + "\"";
+			author.addProperty("url", link.toString());
 		if (iconPresent)
-			author += ",\"icon_url\":\"" + icon + "\"";
+			author.addProperty("icon_url", icon.toString());
 
-		author += "}";
-		return author;
+		return author.toString();
 	}
 }

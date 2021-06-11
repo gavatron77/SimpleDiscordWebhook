@@ -6,6 +6,10 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 public class Webhook {
 	private URL url;
 	private String content;
@@ -19,58 +23,55 @@ public class Webhook {
 		try {
 			url = new URL(u);
 		} catch (Exception e) {
-			System.out.println("Your webhook URL is invalid for some reason.");
+			System.err.println("Your webhook URL is invalid for some reason.");
 		}
 	}
 
-	public void setName(String n) {
+	public Webhook setName(String n) {
 		name = n;
+		return this;
 	}
 
-	public void setContent(String c) {
+	public Webhook setContent(String c) {
 		content = c;
+		return this;
 	}
 
-	public void setIcon(String a) {
+	public Webhook setIcon(String a) {
 		try {
 			icon = new URL(a);
 		} catch (Exception e) {
-			System.out.println("Your webhook icon URL is invalid for some reason.");
+			System.err.println("Your webhook icon URL is invalid for some reason.");
 		}
 		iconPresent = true;
+		return this;
 	}
 
-	public void addEmbed(Embed e) {
+	public Webhook addEmbed(Embed e) {
 		embeds.add(e.getData());
 		embedsPresent = true;
+		return this;
 	}
 
-	private String getEmbeds() {
-		String jsonEmbeds = ",\"embeds\":[";
-		int i = 0;
-		int c = embeds.size();
+	private JsonArray getEmbeds() {
+		JsonArray embedsJson = new JsonArray();
 
 		for (String e : embeds) {
-			jsonEmbeds += e;
-			i++;
-			if (i < c)
-				jsonEmbeds += ",";
+			embedsJson.add(JsonParser.parseString(e));
 		}
 
-		jsonEmbeds += "]";
-		return jsonEmbeds;
+		return embedsJson;
 	}
 
-	public String getData() {
-		String message = "{\"content\":\"" + content + "\"";
+	public JsonObject getData() {
+		JsonObject message = new JsonObject();
+		message.addProperty("content", content);
 
 		if (iconPresent)
-			message += ",\"avatar_url\":\"" + icon + "\"";
+			message.addProperty("avatar_url", icon.toString());
 		if (embedsPresent)
-			message += getEmbeds();
-
-		message += ",\"username\":\"" + name + "\"";
-		message += "}";
+			message.add("embeds", getEmbeds());
+		message.addProperty("username", name);
 		return message;
 	}
 
@@ -81,7 +82,7 @@ public class Webhook {
 			http.setDoOutput(true);
 			http.setRequestProperty("Content-Type", "application/json");
 
-			byte[] out = getData().getBytes(StandardCharsets.UTF_8);
+			byte[] out = getData().toString().getBytes(StandardCharsets.UTF_8);
 
 			OutputStream stream = http.getOutputStream();
 			stream.write(out);
