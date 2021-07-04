@@ -63,7 +63,7 @@ public class Webhook {
 		return embedsJson;
 	}
 
-	public JsonObject getData() {
+	private JsonObject getData() {
 		JsonObject message = new JsonObject();
 		message.addProperty("content", content);
 
@@ -95,7 +95,7 @@ public class Webhook {
 		}
 	}
 
-	public void clear() {
-
+	public String getString() {
+		return getData().toString();
 	}
 }
