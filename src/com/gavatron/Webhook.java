@@ -27,6 +27,15 @@ public class Webhook {
 		}
 	}
 
+	public Webhook setURL(String u) {
+		try {
+			url = new URL(u);
+		} catch (Exception e) {
+			System.err.println("Your webhook URL is invalid for some reason.");
+		}
+		return this;
+	}
+
 	public Webhook setName(String n) {
 		name = n;
 		return this;
@@ -49,6 +58,12 @@ public class Webhook {
 
 	public Webhook addEmbed(Embed e) {
 		embeds.add(e.getData());
+		embedsPresent = true;
+		return this;
+	}
+
+	public Webhook addJsonEmbed(String e) {
+		embeds.add(e);
 		embedsPresent = true;
 		return this;
 	}
@@ -93,6 +108,28 @@ public class Webhook {
 		} catch (Exception e) {
 			return false;
 		}
+	}
+
+	public boolean send(boolean reset) {
+		try {
+			send();
+
+			if (reset)
+				reset();
+
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
+	public void reset() {
+		content = null;
+		name = "Gavatron77\'s Java Webhook Library";
+		icon = null;
+		embeds = new ArrayList<>();
+		iconPresent = false;
+		embedsPresent = false;
 	}
 
 	public String getString() {

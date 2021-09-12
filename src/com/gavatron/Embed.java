@@ -1,5 +1,7 @@
 package com.gavatron;
 
+import java.awt.Color;
+
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -25,6 +27,19 @@ public class Embed {
 		return this;
 	}
 
+	public Embed setColor(int r, int g, int b) {
+		int c = r;
+		c = (c << 8) + g;
+		c = (c << 8) + b;
+		embed.addProperty("color", c);
+		return this;
+	}
+	
+	public Embed setColor(Color c) {
+		setColor(c.getRed(),c.getGreen(),c.getBlue());
+		return this;
+	}
+
 	public Embed setAuthor(Author a) {
 		embed.add("author", JsonParser.parseString(a.getData()).getAsJsonObject());
 		return this;
@@ -43,7 +58,7 @@ public class Embed {
 		embed.add("thumbnail", image);
 		return this;
 	}
-	
+
 	public Embed addTimestamp(String t) {
 		embed.addProperty("timestamp", t);
 		return this;
@@ -51,5 +66,10 @@ public class Embed {
 
 	public String getData() {
 		return embed.toString();
+	}
+
+	public Embed json(JsonObject d) {
+		embed = d;
+		return this;
 	}
 }
